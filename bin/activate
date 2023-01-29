@@ -1,0 +1,5 @@
+#!/bin/bash
+
+HERE="$(dirname "$1")/bin"
+
+export PATH="$HERE:$PATH"

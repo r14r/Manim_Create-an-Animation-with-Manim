@@ -1,0 +1,24 @@
+#!/bin/bash
+
+FILES="$*"
+
+if [ "$FILES" == "" ]; then
+	FILES="$(find . -type f -name "*.py" | sort)"
+fi
+
+for FILE in $FILES
+do
+	cat "$FILE" | grep -v -E '^\s*$' | grep self.wait 1>&- 2>&-
+
+	if [ "$?" == "1" ]; then
+		PREFIX="$(grep 'def construct(self)' "$FILE" | sed -E '1,$s/def .*//g')"
+
+		(
+			cat "$FILE"
+			echo "${PREFIX}    self.wait()"
+		) >"${FILE}.new"
+
+		mv "${FILE}.new" "${FILE}"
+	fi
+done
+

@@ -1,0 +1,11 @@
+../../../bin/extract_examples_from_source.py  ../../repositories/ManimCommunity_manim/docs/source rst
+
+
+DST=src.new
+
+mkdir -p    $DST
+
+cd          $DST
+mv  ../*.py .
+
+autopep8 --in-place *.py

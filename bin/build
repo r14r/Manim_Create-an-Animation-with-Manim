@@ -1,0 +1,35 @@
+#!/bin/bash
+
+if [ "$1" == "--dry-run" ]; then
+    shift
+    CMD="echo"
+else
+    CMD=""
+fi
+
+if [ "$1" == "--all" ]; then
+    shift
+    FLDRS="$(find src -name ADD_TO_README | xargs dirname)"
+else
+    FLDRS="$@"
+fi
+
+
+for FLDR in $FLDRS
+do
+    echo "Create Animations"
+    $CMD m --all                "${FLDR}/src"
+
+    echo "Move Output Files"
+    $CMD rm -rf                 "${FLDR}/mp4"
+    $CMD mv                     "${FLDR}/src/mp4" "${FLDR}"
+
+    $CMD rm -rf                 "${FLDR}/png"
+    $CMD mv                     "${FLDR}/src/png" "${FLDR}"
+
+    echo "Create Animated GIFS from MP4"
+    $CMD mpg2gif --all          "${FLDR}/mp4"
+
+    echo "Create Markdown of GIFS"
+    $CMD gifs2markdown          "${FLDR}/mp4"
+done

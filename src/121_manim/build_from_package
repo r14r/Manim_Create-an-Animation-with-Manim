@@ -1,0 +1,34 @@
+
+HERE=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+
+SITE="$(pip show manim | grep Location | cut -d/ -f2-)"
+ROOT="$(cd "/$SITE/manim" && pwd)"
+
+DEST=src_packages
+
+CMD= 
+
+rm -rf      $DEST
+mkdir -p    $DEST/src
+cd          $DEST/src
+
+touch ADD_TO_README
+
+echo Parsing $ROOT
+
+extract_examples_from_source.py  $ROOT rst
+extract_examples_from_source.py  $ROOT py
+
+echo Add final self.wait
+add_final_selfwait
+
+echo Format files with autopep8
+autopep8 --in-place *.py
+
+echo Remove duplicates
+fdupes --recurse --delete --noprompt --quiet >&- .
+
+echo Rename files to basename
+rename_to_basename
+
+

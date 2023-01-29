@@ -1,0 +1,13 @@
+#!/bin/bash
+
+find . -type f 			|\
+grep -E ".+_\d\d\.py"	|\
+while read OLD
+do
+	# echo "Checking $OLD  with $NEW ..."
+	NEW="$(echo $OLD | sed -E '1,$s/_..\.py/.py/g')"
+	if [ ! -f "$NEW" ]; then
+		mv "$OLD" "$NEW"
+	fi
+done
+

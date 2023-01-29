@@ -1,0 +1,46 @@
+#!/bin/bash
+
+START="$1"
+
+MARKDOWN="$1"
+MARKDOWN="${MARKDOWN#*/}"
+MARKDOWN="${MARKDOWN%/*}"
+
+MARKDOWN="doc/$(echo "$MARKDOWN" | tr '/' '_' | tr '[[:lower:]]' '[[:upper:]]').md"
+
+TITLE="$(echo "${MARKDOWN}" | tr '/' '_' | tr '_' ' ' | tr '[[:lower:]]' '[[:upper:]]')"
+
+COUNT=-1
+
+HEADER=""
+IMAGES=""
+
+echo "Creating Markdown File $MARKDOWN for folder $START"
+
+(
+	echo "## $TITLE"
+	echo ""
+
+	find "$START" -name "*.gif" | sort | while read FILE
+	do 
+		NAME="$(basename "$FILE" .gif)"
+		echo "- $COUNT: $NAME" >&2
+
+
+		((COUNT=$COUNT + 1))
+
+		if [ "$COUNT" == 4 ]; then
+			COUNT=0
+			echo "$HEADER|"
+			echo "|:-----:|:-----:|:-----:|:-----:|"
+			echo "$IMAGES|"
+			echo ""
+
+			HEADER=""
+			IMAGES=""
+		fi
+
+		HEADER="$HEADER|$NAME"
+		IMAGES="$IMAGES|<img src=\"$FILE\" alt=\"$NAME\" style=\"height:200px;\"/>"
+	done
+) >"${MARKDOWN}"

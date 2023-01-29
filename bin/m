@@ -1,0 +1,59 @@
+#!/bin/bash
+
+HERE="$PWD"
+ROOT="$(dirname "$0")"
+
+if [ "$ROOT" == "." ]; then
+    ROOT="$HERE"
+fi
+
+FLDR_ETC="$(cd "$ROOT/../etc" && pwd)"
+
+WITH_MANIM="NO"
+WITH_MANIMCE="YES"
+MANIM_CFG="$FLDR_ETC/manim.cfg"
+
+MODE="FILE"
+if [ "$1" == "--dry-run" ]; then
+    shift
+    CMD="echo"
+else
+    CMD=""
+fi
+
+if [ "$1" == "--all" ]; then
+    shift
+    FLDR="${1:-.}"
+    cd "$FLDR"
+    FILES="$(find . -type f -name "*.py")"
+    MODE="ALL"
+else
+    FILES="$*"
+    MODE="FILE"
+fi
+
+echo $FILES | tr ' ' '\n' | while read FILE
+do
+    if [ "$WITH_MANIM" = "YES" ]; then
+        echo "manim -a --media_dir ./media $FILE"
+        $CMD  manim -a --media_dir ./media $FILE
+    elif [ "$WITH_MANIMCE" = "YES" ]; then
+        echo "manimce -a --config_file ${MANIM_CFG} $FILE"
+        $CMD  manimce -a --config_file ${MANIM_CFG} $FILE 
+    else
+        echo "python3 -m manim --config_file ${MANIM_CFG} -a $FILE"
+        $CMD  python3 -m manim --config_file ${MANIM_CFG} $FILE
+    fi
+
+	$CMD rm -rf media
+done
+
+if [ "$MODE" == "ALL" ]; then
+    if [ -d media ]; then
+        $CMD mkdir png mp4
+        mv $(find media -name "*.mp4") mp4
+        mv $(find media -name "*.png") png
+
+        $CMD rm -rf media
+    fi
+fi

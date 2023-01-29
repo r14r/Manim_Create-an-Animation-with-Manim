@@ -1,0 +1,46 @@
+#!/bin/bash
+
+HERE=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+
+if [ "$1" == "" ]; then
+    ROOT="$(cd "$HERE/../repositories.manim/ManimCommunity_manim" && pwd)"
+else
+    ROOT="$1"
+fi
+
+#
+#
+#
+(
+    cd "$ROOT"
+
+    find . -name "*.py" -exec grep -E '^class|^\s+def' {} /dev/null \; |\
+    while read LINE
+    do
+        FILE="$(echo $LINE | cut -d: -f1)"
+        REST="$(echo $LINE | cut -d: -f2-)"
+        
+        #echo "DEBUG: REST='$REST' '$LINE'"
+
+        if [[ $REST =~ ^class.* ]]; then
+            CLASS="$(echo $LINE | cut -d' ' -f2-)"
+            CLASS="${CLASS/:/}"
+
+            FUNC=""
+            ISCLASS="#"
+
+            printf "\n"
+        else
+            FUNC="${REST/ def /}"
+
+            ISCLASS=" "
+        fi
+
+        printf "%s %-60s %-40s %-s\n" "$ISCLASS" "$CLASS" "$FUNC" ""
+
+        # printf "%-60s: %-40s %-s\n" "$CLASS" "$FUNC" "$FILE"
+    done
+) # | sort
+
+
+

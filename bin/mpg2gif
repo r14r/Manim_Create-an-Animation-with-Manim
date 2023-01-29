@@ -1,0 +1,16 @@
+#!/bin/bash
+
+FLDR="${2:-.}"
+
+if [ "$1" == "--all" ]; then
+	FILES="$(find $FLDR -type f -name "*.mp4")"
+else
+	FILES="$1"
+fi
+
+for FILE in $FILES
+do
+	echo -n "."
+	ffmpeg -y -v 0 -i $FILE ${FILE/.mp4}.gif
+done
+echo ""

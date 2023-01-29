@@ -1,0 +1,62 @@
+
+HERE=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+
+DEST=src_both
+
+CMD= 
+
+rm -rf      $DEST
+mkdir -p    $DEST/src
+cd          $DEST/src
+
+touch ADD_TO_README
+
+#
+#
+#
+ROOT="$HERE/src_packages/src/*.py"
+
+NRFILES="$(ls $ROOT | wc -l)"
+printf "%-40s: %d\n" "copy files from packages" $NRFILES
+
+ls $ROOT | while read FILE; do cp "$FILE" "$(basename "$FILE" .py).P.py" ; done
+
+ROOT="$HERE/src_repository/src/*.py"
+
+NRFILES="$(ls $ROOT | wc -l)"
+printf "%-40s: %d\n" "copy files from repository" $NRFILES
+
+ls $HERE/src_repository/src/*.py | while read FILE; do cp "$FILE" "$(basename "$FILE" .py).R.py" ; done
+
+echo rename duplicate files
+ls -1 *.P.py    |\
+while read FILE
+do
+  NAME="${FILE%%.*}"
+  
+  if [ -f "${NAME}.R.py" ]; then
+    mv "$FILE" "${NAME}.P+R.py"
+    rm         "${NAME}.R.py"
+  fi
+done
+
+#
+#
+#
+NRFILES1="$(find . -type f | wc -l)"
+fdupes --recurse --delete --noprompt --quiet >&- .
+NRFILES2="$(find . -type f | wc -l)"
+printf "%-40s: %d -> %d\n" "remove duplicates" "$NRFILES1" "$NRFILES2"
+
+#
+#
+#
+echo rename files to basename
+rename_to_basename
+
+#
+#
+#
+echo rename class names
+rename_classnames *.py
+

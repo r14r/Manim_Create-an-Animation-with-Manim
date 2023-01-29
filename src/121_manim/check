@@ -1,0 +1,27 @@
+#!/bin/bash
+
+find src_both -name "*.py"		|\
+sort					|\
+while read FILE
+do
+	NAME="${FILE##*/}"
+ 	NAME="${NAME%%.*}"
+
+	 FLDR="${FILE%%/*}"
+	GROUP="${FLDR/src_/}"
+
+	HAS_MP4=
+	HAS_PNG=
+
+	MP4_FILE="$FLDR/mp4/${NAME}.mp4"
+	PNG_FILE="$FLDR/png/${NAME}_ManimCE_v0.14.0.png"
+
+	[  -f "${MP4_FILE}" ] && HAS_MP4=MP4
+	[  -f "${PNG_FILE}" ] && HAS_PNG=PNG
+
+	STATE=OK
+	[ "${HAS_MP4}/${HAS_PNG}" == "/" ] && STATE=MISSING
+
+	printf "%-10s %-40s: %10s %3s/%3s (%s)\n" "$FLDR" "$NAME" "$STATE" "$HAS_MP4" "$HAS_PNG" "$MP4_FILE" 
+done
+

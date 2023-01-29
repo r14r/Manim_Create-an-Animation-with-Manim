@@ -1,0 +1,8 @@
+bin/build src/110_demo
+bin/build src/120_reference
+bin/build src/121_manim/site_examples
+bin/build src/121_manim/src_package
+bin/build src/122_latex
+bin/build src/130_gallery
+bin/build src/180_create_mathematical_animations
+bin/build src/190_diverses
