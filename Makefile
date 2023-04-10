@@ -15,7 +15,7 @@ readme:
 	cat doc/000_start/*md doc/*.md doc/999_end/*.md >README.md
 
 build-all:
-	find src -name ADD_TO_README | xargs dirname | while read FLDR; do echo build $FLDR; done
+	bin/build-all
 
 black:
 	black     main.py src

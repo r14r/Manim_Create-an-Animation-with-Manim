@@ -1,8 +1,6 @@
 # Programmier-Workshop: Python / Fortgeschrittene
 
-![Logo](doc/mp4/CreateAnimationsWithManim.gif)
-
-![Logo](doc/logo_manim.png)
+![Logo](doc/img/logo_manim.png)
 
 ## Create Manim Development Environment
 

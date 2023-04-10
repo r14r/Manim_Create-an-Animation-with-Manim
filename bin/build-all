@@ -1,0 +1,3 @@
+#!/usr/bin/bash
+
+find src -name ADD_TO_README | xargs dirname | while read FLDR; do echo build ${FLDR}; done
